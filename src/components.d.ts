@@ -17,7 +17,7 @@ import {
 export namespace Components {
 
   interface AppHome {
-    'chat': (event: MouseEvent, msg: string) => void;
+    'chat': (msg: string) => void;
   }
   interface AppHomeAttributes extends StencilHTMLAttributes {}
 

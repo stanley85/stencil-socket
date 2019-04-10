@@ -70,7 +70,7 @@ export class SocketIoService {
         }.bind(this));
     }
 
-    public onSocketReady(callback: () => void) {
+    public onSocketReady(callback: () => any) {
         return this.ensureIoPresent().then(function () {
             callback();
         }.bind(this));
@@ -81,7 +81,7 @@ export class SocketIoService {
      * @param identifier 
      * @param callback 
      */
-    public onSocket(identifier: string, callback: () => void = () => {}) {
+    public onSocket(identifier: string, callback: any) {
         this.ensureSocketPresent().then(function () {            
             this._socket.on(identifier, callback);
         }.bind(this));

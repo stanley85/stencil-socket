@@ -1,31 +1,42 @@
-import { Component, Element, Method } from '@stencil/core';
+import { Component, Method, State } from '@stencil/core';
 import { SocketIoService } from './../app-root/app-io';
 
 @Component({
   tag: 'app-home',
   styleUrl: 'app-home.css',
-  shadow: true
+  shadow: false
 })
 export class AppHome {
 
-  @Element() element: any;
+  _socketService: SocketIoService = SocketIoService.getInstance();  
 
-  _socketService: SocketIoService = SocketIoService.getInstance();
+  //@Element() element: HTMLElement;
+  @State() textInput: string;
+  @State() messageStack: Array<any> = [];
 
   componentDidLoad() {
     this._socketService.onSocketReady(() => {
-      this._socketService.onSocket('chat message', () => {
-        const chatMessage = document.createElement('div');
-        chatMessage.textContent = "msg";
-        this.element.appendChild(chatMessage);
+      this._socketService.onSocket('chat message', (msg: string) => {
+        console.log('chat message from server', msg);
+        this.messageStack = [this.messageStack, (
+          <div>{msg}</div>
+        )];
+
+        //const chatMessage = document.createElement('div');
+        //const textContent = document.createTextNode(msg);
+        //chatMessage.appendChild(textContent);
+        //this.element.appendChild(chatMessage);
       });
     });
   }
 
-  @Method() chat(event: MouseEvent, msg: string) {
+  @Method() chat(msg: string) {
     this._socketService.emitSocket('chat message', msg);
-    console.log(msg);
-    console.log(event);
+    this.textInput = "";
+  }
+
+  handleTextInput(event) {
+    this.textInput = event.target.value;
   }
 
   render() {
@@ -38,7 +49,9 @@ export class AppHome {
           Check out our docs on <a href='https://stenciljs.com'>stenciljs.com</a> to get started.
         </p>
 
-        <button onClick={(event) => this.chat(event, "test")}>
+        <input type="text" value={this.textInput} onInput={(event) => this.handleTextInput(event)}></input>
+
+        <button onClick={() => this.chat(this.textInput)}>
           Press Me
         </button>
 
@@ -47,6 +60,10 @@ export class AppHome {
             Profile page
           </button>
         </stencil-route-link>
+
+        <p>
+          {this.messageStack}
+        </p>
         
       </div>
     );
